@@ -331,3 +331,25 @@ document.onkeydown = function(event) {
 function dist(a, b) {
 	return (Math.pow(Math.pow(a, 2) + Math.pow(b, 2), 0.5));
 }
+
+function ontouch(event) {
+	event.preventDefault();
+
+	var touch = event.changedTouches[0];
+	var evt = {
+		pageX : touch.pageX,
+		pageY : touch.pageY
+	}
+
+	if (event.type == "touchstart") {
+		canvas.onmousedown(evt);
+	} else if (event.type == "touchmove") {
+		canvas.onmousemove(evt);
+	} else if (event.type == "touchup") {
+		canvas.onmouseup(evt);
+	}
+}
+
+document.addEventListener("touchstart", ontouch, true);
+document.addEventListener("touchmove", ontouch, true);
+document.addEventListener("touchend", ontouch, true);
