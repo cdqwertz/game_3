@@ -37,10 +37,24 @@ var player = {
 	x : grid_w/2,
 	y : grid_h-2,
 	vx : 0,
-	vy : -1
+	vy : -1,
+
+	len : 10
 };
 
 var timer = 0;
+var timer_boost = 0;
+
+var shake = {
+	timer : 0,
+	x : 0,
+	y : 0
+}
+
+var speed = 50;
+var speed_boost = 25;
+
+var score = 0;
 
 function load() {
 	canvas = document.getElementById("canvas");
@@ -59,10 +73,27 @@ function load() {
 function update(t) {
 	var dtime = t - last_time;
 
+	if(shake.timer > 0) {
+		ctx.translate(-shake.x, -shake.y);
+		shake.x += Math.floor(Math.random() * (shake.max+1)) - shake.max/2;
+		shake.y += Math.floor(Math.random() * (shake.max+1)) - shake.max/2;
+		ctx.translate(shake.x, shake.y);
+		shake.timer -= dtime;
+	} else {
+		ctx.translate(-shake.x, -shake.y);
+		shake.x = 0;
+		shake.y = 0;
+	}
+
 	if(game_state == 1) {
-		if(timer > 50) {
+		if(timer > speed || (timer_boost > 0 && timer > speed_boost)) {
 			player.x += player.vx;
 			player.y += player.vy;
+
+			if(player.vy != 0) {
+				score += -player.vy;
+				player.len = Math.floor(score / 30) + 10;
+			}
 
 			if(is_on_grid(player.x, player.y) && grid[player.x][player.y] == 0) {
 				grid[player.x][player.y] = 1;
@@ -75,17 +106,26 @@ function update(t) {
 				grid[player.x][player.y] = 1;
 			} else {
 				game_state = 0;
+
+				shake.timer = 400;
+				shake.max = 4;
 			}
 
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			draw_grid();
+
+			if(timer_boost > 0) {
+				timer_boost -= 1;
+			}
 
 			timer = 0;
 		}
 
 		timer += dtime;
 	} else if(game_state == 0) {
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		//ctx.clearRect(0, 0, canvas.width, canvas.height);
+		reset();
+		game_state = 1;
 	}
 
 	last_time = t;
@@ -163,7 +203,7 @@ function draw_grid() {
 	for(var x = 0; x < grid_w; x++) {
 		for(var y = 0; y < grid_h; y++) {
 			if(grid[x][y] > 0) {
-				if(grid[x][y] > 10) {
+				if(grid[x][y] > player.len) {
 					grid[x][y] = 0;
 				} else {
 					grid[x][y] += 1;
@@ -193,6 +233,8 @@ function reset() {
 
 	grid = [];
 	timer = 0;
+	player.len = 10;
+	score = 0;
 
 	setup_grid();
 }
@@ -204,15 +246,23 @@ document.onkeydown = function(event) {
 		if (event.keyCode == 37) {
 			player.vx = -1;
 			player.vy = 0;
+
+			timer_boost = 4;
 		} else if (event.keyCode == 38) {
 			player.vx = 0;
 			player.vy = -1;
+
+			timer_boost = 4;
 		} else if (event.keyCode == 39) {
 			player.vx = 1;
 			player.vy = 0;
+
+			timer_boost = 4;
 		} else if (event.keyCode == 40) {
 			player.vx = 0;
 			player.vy = 1;
+
+			timer_boost = 4;
 		}
 	} else {
 		game_state = 1;
