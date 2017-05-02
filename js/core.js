@@ -56,6 +56,11 @@ var speed_boost = 25;
 
 var score = 0;
 
+var mouse_start_x = 0;
+var mouse_start_y = 0;
+
+var mouse_pressed = false;
+
 function load() {
 	canvas = document.getElementById("canvas");
 	canvas.width = window.innerWidth;
@@ -125,6 +130,7 @@ function update(t) {
 	} else if(game_state == 0) {
 		//ctx.clearRect(0, 0, canvas.width, canvas.height);
 		alert("Score: " + score);
+		mouse_pressed = false;
 		reset();
 		game_state = 1;
 	} else if (game_state == 2) {
@@ -273,4 +279,54 @@ document.onkeydown = function(event) {
 			timer_boost = 4;
 		}
 	}
+}
+
+document.onmousedown = function(event) {
+	mouse_start_x = event.pageX;
+	mouse_start_y = event.pageY;
+
+	mouse_pressed = true;
+}
+
+document.onmousemove = function (event) {
+	if(mouse_pressed) {
+		var x = event.pageX;
+		var y = event.pageY;
+
+		var dx = x - mouse_start_x;
+		var dy = y - mouse_start_y;
+
+		if(dist(dx, dy) > 5) {
+			if(Math.abs(dx) > Math.abs(dy)) {
+				if(dx > 0) {
+					player.vx = 1;
+					player.vy = 0;
+				} else {
+					player.vx = -1;
+					player.vy = 0;
+				}
+			} else {
+				if(dy > 0) {
+					player.vy = 1;
+					player.vx = 0;
+				} else {
+					player.vy = -1;
+					player.vx = 0;
+				}
+			}
+
+			mouse_start_x = event.pageX;
+			mouse_start_y = event.pageY;
+
+			timer_boost = 4;
+		}
+	}
+}
+
+document.onmouseup = function (event) {
+	mouse_pressed = false;
+}
+
+function dist(a, b) {
+	return (Math.pow(Math.pow(a, 2) + Math.pow(b, 2), 0.5));
 }
