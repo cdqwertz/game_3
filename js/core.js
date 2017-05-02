@@ -70,6 +70,53 @@ function load() {
 	grid_w = Math.ceil(window.innerWidth / scale);
 	grid_h = Math.ceil(window.innerHeight / scale);
 
+	canvas.onmousedown = function(event) {
+		mouse_start_x = event.pageX;
+		mouse_start_y = event.pageY;
+
+		mouse_pressed = true;
+	}
+
+	canvas.onmousemove = function (event) {
+		if(mouse_pressed) {
+			var x = event.pageX;
+			var y = event.pageY;
+
+			var dx = x - mouse_start_x;
+			var dy = y - mouse_start_y;
+
+			if(dist(dx, dy) > 5) {
+				if(Math.abs(dx) > Math.abs(dy)) {
+					if(dx > 0) {
+						player.vx = 1;
+						player.vy = 0;
+					} else {
+						player.vx = -1;
+						player.vy = 0;
+					}
+				} else {
+					if(dy > 0) {
+						player.vy = 1;
+						player.vx = 0;
+					} else {
+						player.vy = -1;
+						player.vx = 0;
+					}
+				}
+
+				mouse_start_x = event.pageX;
+				mouse_start_y = event.pageY;
+
+				timer_boost = 4;
+			}
+		}
+	}
+
+	canvas.onmouseup = function (event) {
+		mouse_pressed = false;
+	}
+
+
 	reset();
 
 	window.requestAnimationFrame(update);
@@ -279,52 +326,6 @@ document.onkeydown = function(event) {
 			timer_boost = 4;
 		}
 	}
-}
-
-document.onmousedown = function(event) {
-	mouse_start_x = event.pageX;
-	mouse_start_y = event.pageY;
-
-	mouse_pressed = true;
-}
-
-document.onmousemove = function (event) {
-	if(mouse_pressed) {
-		var x = event.pageX;
-		var y = event.pageY;
-
-		var dx = x - mouse_start_x;
-		var dy = y - mouse_start_y;
-
-		if(dist(dx, dy) > 5) {
-			if(Math.abs(dx) > Math.abs(dy)) {
-				if(dx > 0) {
-					player.vx = 1;
-					player.vy = 0;
-				} else {
-					player.vx = -1;
-					player.vy = 0;
-				}
-			} else {
-				if(dy > 0) {
-					player.vy = 1;
-					player.vx = 0;
-				} else {
-					player.vy = -1;
-					player.vx = 0;
-				}
-			}
-
-			mouse_start_x = event.pageX;
-			mouse_start_y = event.pageY;
-
-			timer_boost = 4;
-		}
-	}
-}
-
-document.onmouseup = function (event) {
-	mouse_pressed = false;
 }
 
 function dist(a, b) {
