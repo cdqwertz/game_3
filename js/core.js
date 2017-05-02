@@ -105,7 +105,7 @@ function update(t) {
 
 				grid[player.x][player.y] = 1;
 			} else {
-				game_state = 0;
+				game_state = 2;
 
 				shake.timer = 400;
 				shake.max = 4;
@@ -124,8 +124,16 @@ function update(t) {
 		timer += dtime;
 	} else if(game_state == 0) {
 		//ctx.clearRect(0, 0, canvas.width, canvas.height);
+		alert("Score: " + score);
 		reset();
 		game_state = 1;
+	} else if (game_state == 2) {
+		if(shake.timer <= 1)  {
+			game_state = 0;
+		}
+
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		draw_grid();
 	}
 
 	last_time = t;
@@ -264,8 +272,5 @@ document.onkeydown = function(event) {
 
 			timer_boost = 4;
 		}
-	} else {
-		game_state = 1;
-		reset();
 	}
 }
